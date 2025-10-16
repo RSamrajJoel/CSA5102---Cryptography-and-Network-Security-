@@ -1,0 +1,21 @@
+#include <stdio.h>
+#include <string.h>
+#include <openssl/md5.h>
+
+int main() {
+    unsigned char digest[MD5_DIGEST_LENGTH];
+    char msg[100];
+    int i;
+
+    printf("Enter a message: ");
+    gets(msg);
+
+    MD5((unsigned char*)msg, strlen(msg), digest);
+
+    printf("MD5 hash: ");
+    for (i = 0; i < MD5_DIGEST_LENGTH; i++)
+        printf("%02x", digest[i]);
+    printf("\n");
+
+    return 0;
+}
