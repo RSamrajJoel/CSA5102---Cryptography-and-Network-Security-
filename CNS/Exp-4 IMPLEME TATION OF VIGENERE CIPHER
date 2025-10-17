@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void encrypt(char text[], char key[]) {
+    int i, j;
+    for (i = 0, j = 0; i < strlen(text); i++, j++) {
+        if (j == strlen(key)) j = 0;
+        text[i] = ((toupper(text[i]) - 'A') + (toupper(key[j]) - 'A')) % 26 + 'A';
+    }
+    printf("Encrypted Text: %s\n", text);
+}
+
+void decrypt(char text[], char key[]) {
+    int i, j;
+    for (i = 0, j = 0; i < strlen(text); i++, j++) {
+        if (j == strlen(key)) j = 0;
+        text[i] = ((toupper(text[i]) - (toupper(key[j]) - 'A') - 'A' + 26) % 26) + 'A';
+    }
+    printf("Decrypted Text: %s\n", text);
+}
+
+int main() {
+    char text[100], key[100];
+    int choice;
+
+    while (1) {
+        printf("\n1. Encrypt\n2. Decrypt\n3. Exit\nEnter choice: ");
+        scanf("%d", &choice);
+        if (choice == 3) break;
+
+        printf("Enter text: ");
+        scanf("%s", text);
+        printf("Enter key: ");
+        scanf("%s", key);
+
+        if (choice == 1) encrypt(text, key);
+        else if (choice == 2) decrypt(text, key);
+        else printf("Invalid choice!\n");
+    }
+    return 0;
+}
