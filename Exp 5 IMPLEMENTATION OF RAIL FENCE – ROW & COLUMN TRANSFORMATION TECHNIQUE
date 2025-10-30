@@ -1,0 +1,45 @@
+#include<stdio.h>
+#include<string.h>
+
+void main() {
+    int i, j, k, l;
+    char a[50], c[50], d[50];
+
+    printf("\n\t\tRAIL FENCE CIPHER");
+    printf("\n\nEnter the input string: ");
+    gets(a);
+
+    l = strlen(a);
+
+    // Encryption
+    for(i = 0, j = 0; i < l; i++) {
+        if(i % 2 == 0)
+            c[j++] = a[i];
+    }
+    for(i = 0; i < l; i++) {
+        if(i % 2 == 1)
+            c[j++] = a[i];
+    }
+    c[j] = '\0';
+
+    printf("\nEncrypted Text: %s", c);
+
+    // Decryption
+    if(l % 2 == 0)
+        k = l / 2;
+    else
+        k = (l / 2) + 1;
+
+    for(i = 0, j = 0; i < k; i++) {
+        d[j] = c[i];
+        j = j + 2;
+    }
+
+    for(i = k, j = 1; i < l; i++) {
+        d[j] = c[i];
+        j = j + 2;
+    }
+
+    d[l] = '\0';
+    printf("\nDecrypted Text: %s", d);
+}
