@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdint.h>
+
+int PC1[56], PC2[48], IP[64], IP_INV[64], SHIFT[16];
+int SBOX[8][4][16];
+
+void generateKeys(uint64_t key, uint64_t subkeys[16]) {
+    for (int i = 0; i < 16; i++)
+        subkeys[i] = key ^ (i * 0x0F0F0F0F0F0F0F0F); 
+}
+
+uint32_t F(uint32_t R, uint64_t K) {
+    return (R ^ (uint32_t)(K & 0xFFFFFFFF));
+}
+
+uint64_t DES_Decrypt(uint64_t ciphertext, uint64_t subkeys[16]) {
+    uint64_t permuted = ciphertext;
+    uint32_t L = (permuted >> 32) & 0xFFFFFFFF;
+    uint32_t R = permuted & 0xFFFFFFFF;
+    for (int i = 15; i >= 0; i--) {
+        uint32_t temp = R;
+        R = L ^ F(R, subkeys[i]);
+        L = temp;
+    }
+    uint64_t combined = ((uint64_t)R << 32) | L;
+    uint64_t plaintext = combined;
+    return plaintext;
+}
+
+uint64_t DES_Encrypt(uint64_t plaintext, uint64_t subkeys[16]) {
+    uint64_t permuted = plaintext;
+    uint32_t L = (permuted >> 32) & 0xFFFFFFFF;
+    uint32_t R = permuted & 0xFFFFFFFF;
+    for (int i = 0; i < 16; i++) {
+        uint32_t temp = R;
+        R = L ^ F(R, subkeys[i]);
+        L = temp;
+    }
+    uint64_t combined = ((uint64_t)R << 32) | L;
+    uint64_t ciphertext = combined;
+    return ciphertext;
+}
+
+int main() {
+    uint64_t key = 0xAABB09182736CCDD;
+    uint64_t subkeys[16];
+    generateKeys(key, subkeys);
+
+    uint64_t plaintext = 0x1234567890ABCDEF;
+    uint64_t ciphertext = DES_Encrypt(plaintext, subkeys);
+    uint64_t decrypted = DES_Decrypt(ciphertext, subkeys);
+
+    printf("Plaintext : %016llX\n", plaintext);
+    printf("Ciphertext: %016llX\n", ciphertext);
+    printf("Decrypted : %016llX\n", decrypted);
+
+    return 0;
+}
