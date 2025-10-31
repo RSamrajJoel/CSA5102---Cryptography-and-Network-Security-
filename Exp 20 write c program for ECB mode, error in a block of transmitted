@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <string.h>
+
+void simple_encrypt(unsigned char *in, unsigned char *key, unsigned char *out, int len) {
+    for (int i = 0; i < len; i++)
+        out[i] = in[i] ^ key[i % 8];
+}
+
+int main() {
+    unsigned char plaintext[32] = "HELLO THIS IS ECB MODE TEST";
+    unsigned char key[8] = "MYSECRET";
+    unsigned char ciphertext[32], decrypted[32];
+    int len = strlen((char *)plaintext);
+    int blocks = (len + 7) / 8;
+    int i, j;
+
+    for (i = 0; i < blocks; i++)
+        simple_encrypt(plaintext + i * 8, key, ciphertext + i * 8, 8);
+
+    printf("Original Ciphertext (Hex): ");
+    for (i = 0; i < len; i++)
+        printf("%02X ", ciphertext[i]);
+    printf("\n");
+
+    ciphertext[8] ^= 0xFF; // introduce error in block 2
+
+    for (i = 0; i < blocks; i++)
+        simple_encrypt(ciphertext + i * 8, key, decrypted + i * 8, 8);
+
+    decrypted[len] = '\0';
+    printf("\nDecrypted Text After Error: %s\n", decrypted);
+
+    return 0;
+}
