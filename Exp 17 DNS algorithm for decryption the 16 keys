@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char plaintext[100], ciphertext[100];
+    char key[16][9] = {
+        "A1B2C3D4", "E5F6G7H8", "I9J0K1L2", "M3N4O5P6",
+        "Q7R8S9T0", "U1V2W3X4", "Y5Z6A7B8", "C9D0E1F2",
+        "G3H4I5J6", "K7L8M9N0", "O1P2Q3R4", "S5T6U7V8",
+        "W9X0Y1Z2", "A3B4C5D6", "E7F8G9H0", "I1J2K3L4"
+    };
+
+    int i, j;
+    printf("Enter ciphertext: ");
+    fgets(ciphertext, sizeof(ciphertext), stdin);
+
+    size_t len = strlen(ciphertext);
+    if(len > 0 && ciphertext[len - 1] == '\n')
+        ciphertext[len - 1] = '\0';
+
+    for(i = 0; i < len; i++) {
+        char c = ciphertext[i];
+        for(j = 0; j < 16; j++) {
+            if(c >= 'A' && c <= 'Z')
+                c = ((c - 'A' - (key[j][0] % 26) + 26) % 26) + 'A';
+            else if(c >= 'a' && c <= 'z')
+                c = ((c - 'a' - (key[j][0] % 26) + 26) % 26) + 'a';
+        }
+        plaintext[i] = c;
+    }
+    plaintext[i] = '\0';
+
+    printf("Decrypted text: %s\n", plaintext);
+    return 0;
+}
