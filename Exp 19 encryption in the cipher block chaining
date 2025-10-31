@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <string.h>
+
+void xor_blocks(unsigned char *a, unsigned char *b, unsigned char *out, int len) {
+    for (int i = 0; i < len; i++)
+        out[i] = a[i] ^ b[i];
+}
+
+int main() {
+    unsigned char plaintext[64] = "THIS IS A CBC MODE EXAMPLE";
+    unsigned char key[8] = "MYSECRET";
+    unsigned char iv[8] = "INITVCTR";
+    unsigned char ciphertext[64] = {0};
+    unsigned char temp[8], block[8];
+    int len = strlen((char *)plaintext);
+    int blocks = (len + 7) / 8;
+    int i, j;
+
+    printf("Plaintext: %s\n", plaintext);
+    printf("\nCBC Encryption:\n");
+
+    for (i = 0; i < blocks; i++) {
+        memset(block, 0, 8);
+        memcpy(block, plaintext + i * 8, (len - i * 8 >= 8) ? 8 : len - i * 8);
+        if (i == 0)
+            xor_blocks(block, iv, temp, 8);
+        else
+            xor_blocks(block, ciphertext + (i - 1) * 8, temp, 8);
+        for (j = 0; j < 8; j++)
+            ciphertext[i * 8 + j] = temp[j] ^ key[j % 8];
+    }
+
+    printf("Ciphertext (Hex): ");
+    for (i = 0; i < blocks * 8; i++)
+        printf("%02X ", ciphertext[i]);
+    printf("\n");
+
+    return 0;
+}
